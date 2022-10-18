@@ -1,6 +1,7 @@
 package co.kahero.flutter_uvc
 
 import android.content.Context
+import android.hardware.usb.UsbDevice
 import androidx.annotation.NonNull
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -22,6 +23,7 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var context : Context
 
   private var mCameraHelper : ICameraHelper? = null
+  private var mUsbDevice : UsbDevice? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_uvc")
@@ -30,7 +32,10 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
 
     // init ICameraHelper 
     if (mCameraHelper == null) {
-      mCameraHelper = CameraHelper()
+      val cameraHelper = CameraHelper()
+      val firstDevice = cameraHelper.getDeviceList().first()
+      mUsbDevice = firstDevice
+      mCameraHelper = cameraHelper
     }
   }
 
@@ -43,6 +48,8 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
     } else if (call.method == "takePicture") {
       val path = context.getExternalFilesDir(null)?.getParent()
       result.success(path)
+    } else if (call.method == "getDevice") {
+      result.success(mUsbDevice?.getDeviceName())
     } else {
       result.notImplemented()
     }

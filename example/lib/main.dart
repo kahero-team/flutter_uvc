@@ -42,11 +42,18 @@ class _MyAppState extends State<MyApp> {
     //   platformVersion = 'Failed to get picture path.';
     // }
 
+    // try {
+    //   final deviceList = await FlutterUvc.deviceList;
+    //   print(deviceList);
+    // } on PlatformException {
+    //   print("Unable to get device list");
+    // }
+
     try {
-      final deviceList = await FlutterUvc.deviceList;
-      print(deviceList);
+      final device = await FlutterUvc.device;
+      print(device);
     } on PlatformException {
-      print("Unable to get device list");
+      print("Unable to get device.");
     }
 
     // If the widget was removed from the tree while the asynchronous platform
