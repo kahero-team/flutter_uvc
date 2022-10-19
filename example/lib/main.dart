@@ -74,7 +74,16 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Flutter UVC Example'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            children: [
+              Text('Running on: $_platformVersion\n'),
+              const SizedBox(
+                width: 640,
+                height: 480,
+                child: AndroidView(viewType: "flutter_uvc_view"),
+              ),
+            ],
+          ),
         ),
       ),
     );

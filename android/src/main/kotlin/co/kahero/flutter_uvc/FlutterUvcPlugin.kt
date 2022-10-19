@@ -9,6 +9,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.StandardMessageCodec
 
 import com.herohan.uvcapp.CameraHelper
 import com.herohan.uvcapp.ICameraHelper
@@ -24,11 +25,16 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
 
   private var mCameraHelper: ICameraHelper? = null
   private var mUsbDevice: UsbDevice? = null
+  private var mUvcViewFactory: UvcViewFactory? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_uvc")
     channel.setMethodCallHandler(this)
+
     context = flutterPluginBinding.applicationContext
+
+    mUvcViewFactory = UvcViewFactory(StandardMessageCodec.INSTANCE, channel)
+    flutterPluginBinding.getPlatformViewRegistry().registerViewFactory("flutter_uvc_view", mUvcViewFactory)
 
     // init ICameraHelper 
     if (mCameraHelper == null) {
