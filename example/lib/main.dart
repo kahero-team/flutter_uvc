@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_uvc/flutter_uvc.dart';
+import 'package:flutter_uvc/usb_device.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,7 +52,7 @@ class _MyAppState extends State<MyApp> {
 
     try {
       final device = await FlutterUvc.device;
-      print(device);
+      print(device?.productName ?? '');
     } on PlatformException {
       print("Unable to get device.");
     }
@@ -64,16 +65,6 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _platformVersion = platformVersion;
     });
-  }
-
-  Future<void> handleSelectDevice() async {
-    try {
-      final deviceList = await FlutterUvc.deviceList;
-      print(deviceList);
-    } on PlatformException {
-      print("Unable to get devices.");
-    }
-    return Future.value(null);
   }
 
   @override
@@ -92,14 +83,74 @@ class _MyAppState extends State<MyApp> {
                 height: 480,
                 child: AndroidView(viewType: "flutter_uvc_view"),
               ),
-              TextButton(
-                child: const Text("Select device"),
-                onPressed: handleSelectDevice,
-              ),
+              const DialogDeviceList(),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class DialogDeviceList extends StatelessWidget {
+  const DialogDeviceList({Key? key}) : super(key: key);
+
+  Future<void> handleSelectDevice(context) async {
+    try {
+      final deviceList = await FlutterUvc.deviceList;
+      promptDeviceList(context, deviceList);
+    } on PlatformException {
+      print("Unable to get devices.");
+    }
+    return Future.value(null);
+  }
+
+  Future<void> promptDeviceList(
+    BuildContext context,
+    List<UsbDevice> deviceList,
+  ) async {
+    final selectedDevice = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text("Select device"),
+          children: deviceList
+              .map(
+                (device) => SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.pop(context, device);
+                  },
+                  child: Column(
+                    children: [
+                      Text(device.productName ?? ''),
+                      Text(device.deviceName),
+                    ],
+                  ),
+                ),
+              )
+              .toList(),
+        );
+      },
+    );
+    try {
+      final res = await FlutterUvc.selectDevice(selectedDevice);
+      if (res) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Device selected."),
+          ),
+        );
+      }
+    } on PlatformException {
+      print("Unable to select devices.");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      child: const Text("Select device"),
+      onPressed: () => handleSelectDevice(context),
     );
   }
 }

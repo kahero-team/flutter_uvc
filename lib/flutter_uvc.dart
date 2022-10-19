@@ -31,4 +31,11 @@ class FlutterUvc {
     final String? result = await _channel.invokeMethod("takePicture");
     return result;
   }
+
+  static Future<bool> selectDevice(UsbDevice usbDevice) async {
+    final bool result = await _channel.invokeMethod("selectDevice", {
+      'deviceId': usbDevice.deviceId,
+    });
+    return result;
+  }
 }

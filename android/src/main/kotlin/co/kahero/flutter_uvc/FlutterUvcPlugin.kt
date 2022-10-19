@@ -57,6 +57,14 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
     } else if (call.method == "getDevice") {
       val usbDevice: UsbDevice? = mUsbDevice
       result.success(if (usbDevice != null) serializeUsbDevice(usbDevice) else null)
+    } else if (call.method == "selectDevice") {
+      val deviceId = call.argument("deviceId") as Int?
+      if (deviceId != null) {
+        mUsbDevice = mCameraHelper?.getDeviceList()?.filter { device -> device.getDeviceId() == deviceId}?.single()
+        result.success(true)
+      } else {
+        result.success(false)
+      }
     } else {
       result.notImplemented()
     }
