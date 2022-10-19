@@ -19,11 +19,11 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
-  private lateinit var context : Context
+  private lateinit var channel: MethodChannel
+  private lateinit var context: Context
 
-  private var mCameraHelper : ICameraHelper? = null
-  private var mUsbDevice : UsbDevice? = null
+  private var mCameraHelper: ICameraHelper? = null
+  private var mUsbDevice: UsbDevice? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_uvc")
