@@ -66,6 +66,16 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> handleSelectDevice() async {
+    try {
+      final deviceList = await FlutterUvc.deviceList;
+      print(deviceList);
+    } on PlatformException {
+      print("Unable to get devices.");
+    }
+    return Future.value(null);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -81,6 +91,10 @@ class _MyAppState extends State<MyApp> {
                 width: 640,
                 height: 480,
                 child: AndroidView(viewType: "flutter_uvc_view"),
+              ),
+              TextButton(
+                child: const Text("Select device"),
+                onPressed: handleSelectDevice,
               ),
             ],
           ),

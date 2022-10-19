@@ -50,12 +50,13 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else if (call.method == "getDeviceList") {
       val deviceList = mCameraHelper?.getDeviceList()
-      result.success(deviceList?.map { device -> device.getDeviceName() })
+      result.success(deviceList?.map { device -> serializeUsbDevice(device) })
     } else if (call.method == "takePicture") {
       val path = context.getExternalFilesDir(null)?.getParent()
       result.success(path)
     } else if (call.method == "getDevice") {
-      result.success(mUsbDevice?.getDeviceName())
+      val usbDevice: UsbDevice? = mUsbDevice
+      result.success(if (usbDevice != null) serializeUsbDevice(usbDevice) else null)
     } else {
       result.notImplemented()
     }
@@ -63,5 +64,13 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
+  }
+
+  private fun serializeUsbDevice(device: UsbDevice): MutableMap<String, Any?> {
+    val serializedData: MutableMap<String, Any?> = HashMap()
+    serializedData.put("deviceId", device.getDeviceId())
+    serializedData.put("deviceName", device.getDeviceName())
+    serializedData.put("productName", device.getProductName())
+    return serializedData
   }
 }

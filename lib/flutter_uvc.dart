@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import 'usb_device.dart';
+
 class FlutterUvc {
   static const MethodChannel _channel = MethodChannel('flutter_uvc');
 
@@ -10,15 +12,19 @@ class FlutterUvc {
     return version;
   }
 
-  static Future<List<String>> get deviceList async {
+  static Future<List<UsbDevice>> get deviceList async {
+    final List<UsbDevice> usbDeviceList = [];
     final List resDeviceList =
         await _channel.invokeMethod('getDeviceList') ?? [];
-    return resDeviceList.map((device) => device as String).toList();
+    resDeviceList.forEach((device) {
+      usbDeviceList.add(UsbDevice.fromJson(device));
+    });
+    return usbDeviceList;
   }
 
-  static Future<String?> get device async {
-    final resDevice = await _channel.invokeMethod('getDevice') as String?;
-    return resDevice;
+  static Future<UsbDevice?> get device async {
+    final resDevice = await _channel.invokeMethod('getDevice');
+    return resDevice != null ? UsbDevice.fromJson(resDevice) : null;
   }
 
   static Future<String?> takePicture() async {
