@@ -39,8 +39,8 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
       // val deviceList = mCameraHelper?.getDeviceList()
       // result.success(deviceList?.map { device -> serializeUsbDevice(device) })
     } else if (call.method == "takePicture") {
-      val path = context.getExternalFilesDir(null)?.getParent()
-      result.success(path)
+      mUvcViewFactory?.takePicture()
+      result.success("SUCCESS")
     } else if (call.method == "getDevice") {
       // val usbDevice: UsbDevice? = mUsbDevice
       // result.success(if (usbDevice != null) serializeUsbDevice(usbDevice) else null)

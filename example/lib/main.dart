@@ -83,6 +83,17 @@ class _MyAppState extends State<MyApp> {
                 height: 480,
                 child: AndroidView(viewType: "flutter_uvc_view"),
               ),
+              TextButton(
+                child: const Text("Take picture"),
+                onPressed: () async {
+                  try {
+                    final res = await FlutterUvc.takePicture();
+                    print(res);
+                  } on PlatformException {
+                    print("Take picture");
+                  }
+                },
+              ),
               const DialogDeviceList(),
             ],
           ),

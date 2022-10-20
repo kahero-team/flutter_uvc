@@ -3,23 +3,31 @@ package co.kahero.flutter_uvc
 import android.view.View
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
+
+import android.os.Environment
 import android.content.Context
 import android.hardware.usb.UsbDevice
 
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
 
+import com.serenegiant.utils.FileUtils
+import com.serenegiant.utils.UriHelper
 import com.serenegiant.widget.AspectRatioSurfaceView
 
 import com.herohan.uvcapp.CameraHelper
 import com.herohan.uvcapp.ICameraHelper
+import com.herohan.uvcapp.ImageCapture
 
-class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback {
+class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback, ImageCapture.OnImageCaptureCallback {
+    private var mContext: Context
     private var mNativeView: View
     private var mCameraView: AspectRatioSurfaceView
     private var mCameraHelper: ICameraHelper
 
     constructor(context: Context, channel: MethodChannel) {
+        mContext = context
+
         mNativeView = LayoutInflater.from(context).inflate(R.layout.camera_view, null, false)
         mCameraView = mNativeView.findViewById(R.id.surface_view)
         mCameraView.setAspectRatio(640, 480)
@@ -76,5 +84,19 @@ class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback
 
     override fun onCancel(device: UsbDevice) {
         println("onCancel")
+    }
+
+    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+        println("Saved image: " + UriHelper.getPath(mContext, outputFileResults.getSavedUri()))
+    }
+
+    override fun onError(imageCaptureError: Int, message: String, cause: Throwable?) {
+        println("Saved image error: " + message)
+    }
+
+    fun takePicture() {
+        val file = FileUtils.getCaptureFile(mContext, Environment.DIRECTORY_DCIM, ".jpg")
+        val options = ImageCapture.OutputFileOptions.Builder(file).build()
+        mCameraHelper.takePicture(options, this)
     }
 }

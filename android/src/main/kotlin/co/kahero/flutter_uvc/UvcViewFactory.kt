@@ -23,4 +23,8 @@ class UvcViewFactory: PlatformViewFactory {
         mViewId = viewId
         return uvcView
     }
+
+    fun takePicture() {
+        mUvcView?.takePicture()
+    }
 }
