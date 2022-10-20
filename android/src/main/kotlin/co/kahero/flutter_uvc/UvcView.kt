@@ -34,7 +34,7 @@ class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback
     }
 
     override fun dispose() {
-
+        mCameraHelper.release()
     }
 
     override fun surfaceCreated(surfaceHolder: SurfaceHolder) {
