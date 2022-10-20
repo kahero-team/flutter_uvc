@@ -11,6 +11,8 @@ import android.hardware.usb.UsbDevice
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
 
+import java.io.File
+
 import com.serenegiant.utils.FileUtils
 import com.serenegiant.utils.UriHelper
 import com.serenegiant.widget.AspectRatioSurfaceView
@@ -95,8 +97,9 @@ class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback
     }
 
     fun takePicture() {
-        val file = FileUtils.getCaptureFile(mContext, Environment.DIRECTORY_DCIM, ".jpg")
-        val options = ImageCapture.OutputFileOptions.Builder(file).build()
+        val outputDir = mContext.getCacheDir()
+        val captureFile = File.createTempFile("CAP", ".jpg", outputDir)
+        val options = ImageCapture.OutputFileOptions.Builder(captureFile).build()
         mCameraHelper.takePicture(options, this)
     }
 }
