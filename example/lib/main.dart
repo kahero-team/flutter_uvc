@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_uvc/flutter_uvc.dart';
 import 'package:flutter_uvc/usb_device.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  String? _filePath;
 
   @override
   void initState() {
@@ -50,12 +52,12 @@ class _MyAppState extends State<MyApp> {
     //   print("Unable to get device list");
     // }
 
-    try {
-      final device = await FlutterUvc.device;
-      print(device?.productName ?? '');
-    } on PlatformException {
-      print("Unable to get device.");
-    }
+    // try {
+    //   final device = await FlutterUvc.device;
+    //   print(device?.productName ?? '');
+    // } on PlatformException {
+    //   print("Unable to get device.");
+    // }
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -74,7 +76,7 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Flutter UVC Example'),
         ),
-        body: Center(
+        body: SingleChildScrollView(
           child: Column(
             children: [
               Text('Running on: $_platformVersion\n'),
@@ -88,13 +90,16 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () async {
                   try {
                     final res = await FlutterUvc.takePicture();
-                    print(res);
+                    setState(() {
+                      _filePath = res;
+                    });
                   } on PlatformException {
                     print("Take picture");
                   }
                 },
               ),
               const DialogDeviceList(),
+              if (_filePath != null) Image.file(File(_filePath!)),
             ],
           ),
         ),
