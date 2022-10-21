@@ -24,7 +24,7 @@ class UvcViewFactory: PlatformViewFactory {
         return uvcView
     }
 
-    fun takePicture() {
-        mUvcView?.takePicture()
+    fun takePicture(result: MethodChannel.Result) {
+        mUvcView?.takePicture(result)
     }
 }

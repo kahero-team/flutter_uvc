@@ -27,6 +27,8 @@ class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback
     private var mCameraView: AspectRatioSurfaceView
     private var mCameraHelper: ICameraHelper
 
+    private lateinit var flutterResult: MethodChannel.Result
+
     constructor(context: Context, channel: MethodChannel) {
         mContext = context
 
@@ -89,14 +91,16 @@ class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback
     }
 
     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-        println("Saved image: " + UriHelper.getPath(mContext, outputFileResults.getSavedUri()))
+        flutterResult.success(UriHelper.getPath(mContext, outputFileResults.getSavedUri()))
     }
 
     override fun onError(imageCaptureError: Int, message: String, cause: Throwable?) {
-        println("Saved image error: " + message)
+        flutterResult.error("captureError", "Unable to take picture", null)
     }
 
-    fun takePicture() {
+    fun takePicture(result: MethodChannel.Result) {
+        flutterResult = result
+
         val outputDir = mContext.getCacheDir()
         val captureFile = File.createTempFile("CAP", ".jpg", outputDir)
         val options = ImageCapture.OutputFileOptions.Builder(captureFile).build()
