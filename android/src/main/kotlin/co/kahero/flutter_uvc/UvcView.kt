@@ -26,6 +26,7 @@ class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback
     private var mNativeView: View
     private var mCameraView: AspectRatioSurfaceView
     private var mCameraHelper: ICameraHelper
+    private var mUvcState: UvcState
 
     private lateinit var flutterResult: MethodChannel.Result
 
@@ -39,6 +40,8 @@ class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback
 
         mCameraHelper = CameraHelper()
         mCameraHelper.setStateCallback(this)
+
+        mUvcState = UvcState.STATE_PREVIEW
     }
 
     override fun getView(): View {
@@ -91,19 +94,27 @@ class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback
     }
 
     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+        mUvcState = UvcState.STATE_PREVIEW
         flutterResult.success(UriHelper.getPath(mContext, outputFileResults.getSavedUri()))
     }
 
     override fun onError(imageCaptureError: Int, message: String, cause: Throwable?) {
+        mUvcState = UvcState.STATE_PREVIEW
         flutterResult.error("captureError", "Unable to take picture", null)
     }
 
     fun takePicture(result: MethodChannel.Result) {
+        if (mUvcState == UvcState.STATE_CAPTURING) {
+            result.error("captureAlreadyActive", "Picture is currently being captured", null)
+        }
+
         flutterResult = result
 
         val outputDir = mContext.getCacheDir()
         val captureFile = File.createTempFile("CAP", ".jpg", outputDir)
         val options = ImageCapture.OutputFileOptions.Builder(captureFile).build()
+
+        mUvcState = UvcState.STATE_CAPTURING
         mCameraHelper.takePicture(options, this)
     }
 
