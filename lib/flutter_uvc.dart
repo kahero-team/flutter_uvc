@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
 import 'usb_device.dart';
+import 'uvc_exception.dart';
 
 class FlutterUvc {
   static const MethodChannel _channel = MethodChannel('flutter_uvc');
@@ -22,9 +24,12 @@ class FlutterUvc {
     return usbDeviceList;
   }
 
-  static Future<String?> takePicture() async {
-    final String? result = await _channel.invokeMethod("takePicture");
-    return result;
+  static Future<File> takePicture() async {
+    final String? path = await _channel.invokeMethod("takePicture");
+    if (path == null) {
+      throw UvcException("INVALID_PATH", "Unable to find the picture needed");
+    }
+    return File(path);
   }
 
   static Future<bool> selectDevice(UsbDevice usbDevice) async {

@@ -19,7 +19,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  String? _filePath;
+  File? _imageFile;
 
   @override
   void initState() {
@@ -91,15 +91,15 @@ class _MyAppState extends State<MyApp> {
                   try {
                     final res = await FlutterUvc.takePicture();
                     setState(() {
-                      _filePath = res;
+                      _imageFile = res;
                     });
                   } on PlatformException {
-                    print("Take picture");
+                    print("Take picture error");
                   }
                 },
               ),
               const DialogDeviceList(),
-              if (_filePath != null) Image.file(File(_filePath!)),
+              if (_imageFile != null) Image.file(_imageFile!),
             ],
           ),
         ),
