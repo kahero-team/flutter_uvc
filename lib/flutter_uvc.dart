@@ -22,11 +22,6 @@ class FlutterUvc {
     return usbDeviceList;
   }
 
-  static Future<UsbDevice?> get device async {
-    final resDevice = await _channel.invokeMethod('getDevice');
-    return resDevice != null ? UsbDevice.fromJson(resDevice) : null;
-  }
-
   static Future<String?> takePicture() async {
     final String? result = await _channel.invokeMethod("takePicture");
     return result;

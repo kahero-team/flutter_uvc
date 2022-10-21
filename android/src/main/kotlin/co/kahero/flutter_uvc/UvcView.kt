@@ -106,4 +106,12 @@ class UvcView: PlatformView, SurfaceHolder.Callback, ICameraHelper.StateCallback
         val options = ImageCapture.OutputFileOptions.Builder(captureFile).build()
         mCameraHelper.takePicture(options, this)
     }
+
+    fun getDeviceList(): List<UsbDevice> {
+        return mCameraHelper.getDeviceList()
+    }
+
+    fun selectDevice(device: UsbDevice) {
+        mCameraHelper.selectDevice(device)
+    }
 }

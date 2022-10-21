@@ -1,6 +1,7 @@
 package co.kahero.flutter_uvc
 
 import android.content.Context
+import android.hardware.usb.UsbDevice
 
 import io.flutter.plugin.common.MessageCodec
 import io.flutter.plugin.common.MethodChannel
@@ -26,5 +27,13 @@ class UvcViewFactory: PlatformViewFactory {
 
     fun takePicture(result: MethodChannel.Result) {
         mUvcView?.takePicture(result)
+    }
+
+    fun getDeviceList(): List<UsbDevice>? {
+        return mUvcView?.getDeviceList()
+    }
+
+    fun selectDevice(device: UsbDevice) {
+        mUvcView?.selectDevice(device)
     }
 }

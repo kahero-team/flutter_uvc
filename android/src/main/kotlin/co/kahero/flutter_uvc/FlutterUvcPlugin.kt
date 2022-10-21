@@ -36,21 +36,25 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else if (call.method == "getDeviceList") {
-      // val deviceList = mCameraHelper?.getDeviceList()
-      // result.success(deviceList?.map { device -> serializeUsbDevice(device) })
+      val deviceList = mUvcViewFactory?.getDeviceList()
+      result.success(deviceList?.map { device -> serializeUsbDevice(device) })
     } else if (call.method == "takePicture") {
       mUvcViewFactory?.takePicture(result)
-    } else if (call.method == "getDevice") {
-      // val usbDevice: UsbDevice? = mUsbDevice
-      // result.success(if (usbDevice != null) serializeUsbDevice(usbDevice) else null)
     } else if (call.method == "selectDevice") {
-      // val deviceId = call.argument("deviceId") as Int?
-      // if (deviceId != null) {
-      //   mUsbDevice = mCameraHelper?.getDeviceList()?.filter { device -> device.getDeviceId() == deviceId}?.single()
-      //   result.success(true)
-      // } else {
-      //   result.success(false)
-      // }
+      val deviceId = call.argument("deviceId") as Int?
+
+      val deviceList = mUvcViewFactory?.getDeviceList()
+      if (deviceList == null) {
+        result.error("selectDeviceError", "There are no devices to select", null)
+      }
+
+      val usbDevice = deviceList!!.filter { device -> device.getDeviceId() == deviceId }.single()
+      if (usbDevice == null) {
+        result.error("selectDeviceError", "There's no device with the id " + deviceId, null)
+      }
+
+      mUvcViewFactory?.selectDevice(usbDevice)
+      result.success(null)
     } else {
       result.notImplemented()
     }
