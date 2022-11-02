@@ -28,8 +28,10 @@ class FlutterUvcPlugin: FlutterPlugin, MethodCallHandler {
 
     context = flutterPluginBinding.applicationContext
 
-    mUvcViewFactory = UvcViewFactory(StandardMessageCodec.INSTANCE, channel)
-    flutterPluginBinding.getPlatformViewRegistry().registerViewFactory("flutter_uvc_view", mUvcViewFactory)
+    val uvcViewFactory = UvcViewFactory(StandardMessageCodec.INSTANCE, channel)
+    flutterPluginBinding.getPlatformViewRegistry().registerViewFactory("flutter_uvc_view", uvcViewFactory)
+
+    mUvcViewFactory = uvcViewFactory
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
