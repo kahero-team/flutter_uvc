@@ -1,6 +1,6 @@
 name: flutter_uvc
-description: A new flutter plugin project.
-version: 0.0.1
+description: A flutter plugin for UVC.
+version: 0.0.2
 homepage:
 
 environment:
